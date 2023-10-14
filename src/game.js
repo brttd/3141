@@ -156,11 +156,15 @@ function addCircle(value, x, y) {
 function remove(circle) {
 	Composite.remove(engine.world, circle.body);
 
+	//(Temporary) removed pool
+
+	/*
 	Body.setAngle(circle.body, 0);
 	Body.setAngularVelocity(circle.body, 0);
 	Body.setSpeed(circle.body, 0);
 
 	circle_pool.push(circle);
+    */
 
 	circles.splice(circles.indexOf(circle), 1);
 }
