@@ -93,7 +93,7 @@ let ld = 0;
 let needsResize = false;
 
 function getCircleRadius(value) {
-	return Math.min(10 + value * 7.5, width - 20);
+	return Math.min(10 + value * 7.5 + value ** 2 * 0.2, width * 0.5 - 10);
 }
 function getCircleColor(value) {
 	if (value <= 1) {
