@@ -4,11 +4,12 @@ html, body {
   margin: 0;
   padding: 0;
 
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Asap', sans-serif;
+  font-size: 34px;
   line-height: 1.5;
   font-weight: 400;
 
-  background-color: #FFFFFC;
+  background-color: #F8F7FF;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -17,12 +18,61 @@ html, body {
   -webkit-text-size-adjust: 100%;
 }
 
-#app canvas {
+#game canvas {
   display: block;
 
-  margin: 0 auto;
-  border: 2px solid grey;
-  border-top: none;
+  background-color: #F8F7FF;
+  border: 2px solid #9381FF;
+  border-radius: 8px;
 
   touch-action: pan-y;
+}
+
+#game, #controls {
+  display: block;
+  width: fit-content;
+
+  margin: 0 auto;
+  padding: 8px;
+
+  vertical-align: top;
+}
+
+#controls.below {
+  padding-top: 0;
+}
+
+#controls.floating {
+  margin: 0;
+
+  position: absolute;
+  top: 0;
+
+  padding-left: 0;
+}
+
+button {
+  display: block;
+
+  vertical-align: top;
+
+  font-size: 18px;
+  font-family: 'Asap', sans-serif;
+
+  background-color: #B8B8FF;
+  color: #745CFF;
+  border: 2px solid #B8B8FF;
+  border-radius: 8px;
+
+  padding: 8px 16px;
+}
+button:hover, button:focus {
+  border-color: #745CFF;
+  color: #745CFF;
+}
+
+button:active {
+  background-color: #9381FF;
+  color: #F8F7FF;
+  border-color: #745CFF;
 }

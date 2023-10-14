@@ -66,7 +66,7 @@ const circle_pool = [];
 const colors = [
 	"#FFADAD",
 	"#FFD6A5",
-	"#FDFFB6",
+	//"#FDFFB6",
 	"#CAFFBF",
 	"#9BF6FF",
 	"#A0C4FF",
@@ -93,10 +93,14 @@ let ld = 0;
 let needsResize = false;
 
 function getCircleRadius(value) {
-	return 10 + value * 7.5;
+	return Math.min(10 + value * 7.5, width - 20);
 }
 function getCircleColor(value) {
-	return colors[value % colors.length];
+	if (value <= 1) {
+		return "#FAF0E6";
+	}
+
+	return colors[(value - 2) % colors.length];
 }
 
 function addCircle(value, x, y) {
@@ -222,9 +226,12 @@ function render() {
 		ctx.fill();
 		ctx.stroke();
 
-		ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+		ctx.fillStyle = "rgba(0, 0, 0, 0.35)";
 
-		ctx.font = 25 * pixelRatio + "px 'Asap', sans-serif";
+		ctx.font =
+			"bold  " +
+			Math.min(circles[i].radius * 1.2, 25) * pixelRatio +
+			"px 'Asap', sans-serif";
 
 		ctx.textAlign = "center";
 		ctx.textBaseline = "middle";
@@ -237,7 +244,10 @@ function render() {
 	ctx.setLineDash(line_dash);
 
 	ctx.beginPath();
-	ctx.moveTo(preview.x * screen_scale * pixelRatio, 0);
+	ctx.moveTo(
+		preview.x * screen_scale * pixelRatio,
+		((preview.y + preview.radius) * screen_scale + 10) * pixelRatio
+	);
 	ctx.lineTo(
 		preview.x * screen_scale * pixelRatio,
 		screen_height * pixelRatio
@@ -247,6 +257,7 @@ function render() {
 	ctx.setLineDash(no_line_dash);
 
 	//Draw preview
+	ctx.globalAlpha = 0.7;
 	ctx.beginPath();
 	ctx.fillStyle = preview.color;
 
@@ -261,9 +272,12 @@ function render() {
 	ctx.fill();
 	ctx.stroke();
 
-	ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+	ctx.fillStyle = "rgba(0, 0, 0, 0.35)";
 
-	ctx.font = 25 * pixelRatio + "px 'Asap', sans-serif";
+	ctx.font =
+		"bold  " +
+		Math.min(preview.radius * 1.2, 25) * pixelRatio +
+		"px 'Asap', sans-serif";
 
 	ctx.textAlign = "center";
 	ctx.textBaseline = "middle";
@@ -273,13 +287,13 @@ function render() {
 		preview.y * screen_scale * pixelRatio
 	);
 
+	ctx.globalAlpha = 1;
+
 	ld = d;
 }
 
 function resize() {
-	screen_scale = 1;
-
-	screen_width = Math.min(window.innerWidth, width);
+	needsResize = false;
 
 	screen_height = screen_width / (width / height);
 
@@ -336,10 +350,9 @@ Events.on(engine, "collisionStart", onCollide);
 Events.on(engine, "collisionActive", onCollide);
 
 canvas.addEventListener("pointermove", onPointerMove);
-canvas.addEventListener("pointerup", onPointerClick);
-
-window.addEventListener("resize", function () {
-	needsResize = true;
+canvas.addEventListener("pointerup", function (e) {
+	onPointerMove(e);
+	onPointerClick(e);
 });
 
 //START...
@@ -361,4 +374,18 @@ function setContainer(element) {
 	element.appendChild(canvas);
 }
 
-export { setContainer };
+function setWidth(width) {
+	screen_width = width;
+
+	needsResize = true;
+}
+
+function restart() {
+	console.log("restarting...");
+
+	while (circles.length > 0) {
+		remove(circles[0]);
+	}
+}
+
+export { setContainer, setWidth, restart };
