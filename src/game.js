@@ -24,8 +24,8 @@ let screen_height = 600;
 let screen_scale = 0;
 
 //Physics variables
-let width = 400;
-let height = 600;
+let width = 300;
+let height = 500;
 
 const wall_thickness = 20;
 
