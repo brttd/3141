@@ -13,7 +13,7 @@ const twopi = Math.PI * 2;
 //Rendering variables
 const pixelRatio = window.devicePixelRatio ? window.devicePixelRatio : 1;
 
-const line_dash = [10, 20];
+const line_dash = [10 * pixelRatio, 20 * pixelRatio];
 const no_line_dash = [];
 
 const canvas = document.createElement("canvas");
@@ -63,6 +63,13 @@ const circles = [];
 
 const circle_pool = [];
 
+const boundary = 20;
+const boundaryTime = 1000 * 3;
+
+let paused = false;
+
+let boundaryMax = 0;
+
 const colors = [
 	"#FFADAD",
 	"#FFD6A5",
@@ -74,7 +81,7 @@ const colors = [
 	"#FFC6FF",
 ];
 
-let preview = {
+const preview = {
 	x: width * 0.5,
 	y: 10,
 	value: 0,
@@ -114,6 +121,8 @@ function addCircle(value, x, y) {
 		recycled.radius = getCircleRadius(value);
 		recycled.color = getCircleColor(value);
 
+		recycled.boundaryTimer = 0;
+
 		let scale =
 			recycled.radius /
 			((recycled.body.bounds.max.x -
@@ -140,6 +149,8 @@ function addCircle(value, x, y) {
 			color: getCircleColor(value),
 
 			body: Bodies.circle(x, y, 100, {}, 36),
+
+			boundaryTimer: 0,
 		});
 
 		Body.scale(
@@ -158,15 +169,11 @@ function addCircle(value, x, y) {
 function remove(circle) {
 	Composite.remove(engine.world, circle.body);
 
-	//(Temporary) removed pool
-
-	/*
 	Body.setAngle(circle.body, 0);
 	Body.setAngularVelocity(circle.body, 0);
 	Body.setSpeed(circle.body, 0);
 
 	circle_pool.push(circle);
-    */
 
 	circles.splice(circles.indexOf(circle), 1);
 }
@@ -204,9 +211,9 @@ function render() {
 
 	hasMerged = false;
 
-	Engine.update(engine, d, d / ld);
-
-	console;
+	if (!paused) {
+		Engine.update(engine, d, d / ld);
+	}
 
 	ctx.clearRect(
 		0,
@@ -218,11 +225,22 @@ function render() {
 	ctx.lineWidth = 2 * pixelRatio;
 	ctx.strokeStyle = "rgba(0,0,0, 0.2)";
 
+	boundaryMax = 0;
+
 	for (let i = 0; i < circles.length; i++) {
+		if (circles[i].body.position.y - circles[i].radius < boundary) {
+			circles[i].boundaryTimer += d;
+
+			boundaryMax = Math.max(circles[i].boundaryTimer, boundaryMax);
+		} else {
+			circles[i].boundaryTimer = 0;
+		}
+
 		ctx.translate(
 			circles[i].body.position.x * screen_scale * pixelRatio,
 			circles[i].body.position.y * screen_scale * pixelRatio
 		);
+
 		ctx.rotate(circles[i].body.angle);
 
 		ctx.beginPath();
@@ -262,6 +280,24 @@ function render() {
 	);
 
 	ctx.stroke();
+
+	//Draw boundary
+	ctx.globalAlpha = Math.max(0.1, boundaryMax / (boundaryTime * 0.75));
+
+	ctx.fillStyle = "rgba(255, 173, 173, 0.3)";
+	ctx.strokeStyle = "#FFADAD";
+
+	ctx.beginPath();
+	ctx.moveTo(0, boundary * screen_scale * pixelRatio);
+	ctx.lineTo(
+		screen_width * pixelRatio,
+		boundary * screen_scale * pixelRatio
+	);
+	ctx.stroke();
+	ctx.lineTo(screen_width * pixelRatio, 0);
+	ctx.lineTo(0, 0);
+	ctx.fill();
+
 	ctx.setLineDash(no_line_dash);
 
 	//Draw preview
@@ -297,7 +333,26 @@ function render() {
 
 	ctx.globalAlpha = 1;
 
+	if (boundaryMax >= boundaryTime && !paused) {
+		gameOver();
+	}
+
 	ld = d;
+}
+
+function gameOver() {
+	paused = true;
+
+	let score = 0;
+
+	for (let i = 0; i < circles.length; i++) {
+		score += 2 ** circles[i].value;
+	}
+
+	emit("gameOver", {
+		score: score,
+		circles: circles.length,
+	});
 }
 
 function resize() {
@@ -315,6 +370,8 @@ function resize() {
 }
 
 function onPointerClick() {
+	if (paused) return;
+
 	addCircle(preview.value, preview.x, 0);
 
 	updatePreview();
@@ -333,7 +390,9 @@ function updatePreview() {
 }
 
 function onPointerMove(event) {
-	preview.x = (event.offsetX / screen_width) * width;
+	if (!paused) {
+		preview.x = (event.offsetX / screen_width) * width;
+	}
 }
 
 Composite.add(engine.world, [ground, wall_left, wall_right]);
@@ -396,11 +455,31 @@ function setWidth(width) {
 }
 
 function restart() {
-	console.log("restarting...");
-
 	while (circles.length > 0) {
 		remove(circles[0]);
 	}
+
+	paused = false;
 }
 
-export { setContainer, setWidth, restart };
+const listeners = {};
+
+function on(eventName, listener) {
+	if (!listeners.hasOwnProperty(eventName)) {
+		listeners[eventName] = [];
+	}
+
+	listeners[eventName].push(listener);
+}
+
+function emit(eventName, event) {
+	if (!listeners.hasOwnProperty(eventName)) {
+		return;
+	}
+
+	for (let i = 0; i < listeners[eventName].length; i++) {
+		listeners[eventName][i](event);
+	}
+}
+
+export { setContainer, setWidth, restart, on };

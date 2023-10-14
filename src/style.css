@@ -29,13 +29,13 @@ html, body {
 }
 
 #game, #controls {
+  position: relative;
+
   display: block;
   width: fit-content;
 
   margin: 0 auto;
   padding: 8px;
-
-  vertical-align: top;
 }
 
 #controls.below {
@@ -49,6 +49,37 @@ html, body {
   top: 0;
 
   padding-left: 0;
+}
+
+
+#game-over-screen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom:  0;
+
+  padding: 8px;
+
+  display: none;
+}
+#game-over-screen .wrapper {
+  background-color: rgba(255, 173, 173, 0.2);
+
+
+  height: 100%;
+
+  display: flex;
+  flex-flow:  row nowrap;
+
+  justify-content: center;
+  align-items: center;
+}
+#game-over-screen .content {
+  text-align: center;
+}
+#game-over-screen .content button {
+  display: inline-block;
 }
 
 button {
@@ -65,6 +96,8 @@ button {
   border-radius: 8px;
 
   padding: 8px 16px;
+
+  user-select: none;
 }
 button:hover, button:focus {
   border-color: #745CFF;
