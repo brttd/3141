@@ -17,7 +17,17 @@
 	</head>
 	<body>
 		<div id="app">
-			<div id="game"></div>
+			<div id="game">
+				<div class="game-screen" id="game-over-screen">
+					<div class="wrapper">
+						<div class="content">
+							<h2>Game Over!</h2>
+							<h5 id="go-score">Score: {score}</h5>
+							<button id="btn-go-restart">↻ Play again</button>
+						</div>
+					</div>
+				</div>
+			</div>
 			<div id="controls">
 				<button id="btn-restart">↻ Restart</button>
 			</div>
