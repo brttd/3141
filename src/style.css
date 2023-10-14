@@ -17,12 +17,12 @@ html, body {
   -webkit-text-size-adjust: 100%;
 }
 
-#app {
-  max-width: 400px;
+#app canvas {
+  display: block;
+
   margin: 0 auto;
   border: 2px solid grey;
   border-top: none;
-}
-#app canvas {
-  display: block;
+
+  touch-action: pan-y;
 }

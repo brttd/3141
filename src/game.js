@@ -84,12 +84,13 @@ let preview = {
 	next: 0,
 };
 
-//Time variables
-
+//Time / Rendering variables
 let at = Date.now();
 let t = 0;
 let d = 0;
 let ld = 0;
+
+let needsResize = false;
 
 function getCircleRadius(value) {
 	return 10 + value * 7.5;
@@ -185,6 +186,10 @@ function render() {
 	t += d;
 	at += d;
 
+	if (needsResize) {
+		resize();
+	}
+
 	requestAnimationFrame(render);
 
 	Engine.update(engine, d, d / ld);
@@ -248,7 +253,7 @@ function render() {
 	ctx.arc(
 		preview.x * screen_scale * pixelRatio,
 		preview.y * screen_scale * pixelRatio,
-		preview.radius * screen_scale,
+		preview.radius * screen_scale * pixelRatio,
 		0,
 		twopi
 	);
@@ -274,8 +279,17 @@ function render() {
 function resize() {
 	screen_scale = 1;
 
+	screen_width = Math.min(window.innerWidth, width);
+
+	screen_height = screen_width / (width / height);
+
+	screen_scale = screen_width / width;
+
 	canvas.width = screen_width * pixelRatio;
 	canvas.height = screen_height * pixelRatio;
+
+	canvas.style.width = screen_width + "px";
+	canvas.style.height = screen_height + "px";
 }
 
 function onPointerClick() {
@@ -323,6 +337,10 @@ Events.on(engine, "collisionActive", onCollide);
 
 canvas.addEventListener("pointermove", onPointerMove);
 canvas.addEventListener("pointerup", onPointerClick);
+
+window.addEventListener("resize", function () {
+	needsResize = true;
+});
 
 //START...
 
