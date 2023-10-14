@@ -9,6 +9,8 @@ const elem_score = document.getElementById("score");
 const elem_game_over = document.getElementById("game-over-screen");
 const elem_game_over_score = document.getElementById("go-score");
 
+const ratio = 3 / 5;
+
 game.setContainer(elem_game);
 
 function restart() {
@@ -39,7 +41,7 @@ function resize() {
 
 	let width = Math.min(
 		window.innerWidth - 20,
-		window.innerHeight * 0.8,
+		(window.innerHeight - 20) * ratio,
 		500
 	);
 
@@ -61,11 +63,21 @@ function resize() {
 	}
 }
 
+function delayedResize() {
+	if (!awaitingResize) {
+		awaitingResize = true;
+
+		requestAnimationFrame(resize);
+	}
+}
+
 window.addEventListener("resize", function () {
 	if (!awaitingResize) {
 		awaitingResize = true;
 
 		requestAnimationFrame(resize);
+
+		this.setTimeout(delayedResize, 500);
 	}
 });
 
