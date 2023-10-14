@@ -25,7 +25,7 @@ html, body {
   border: 2px solid #9381FF;
   border-radius: 8px;
 
-  touch-action: pan-y;
+  touch-action: none;
 }
 
 #game, #controls {
