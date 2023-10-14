@@ -4,6 +4,7 @@ import Matter from "matter-js";
 const Engine = Matter.Engine,
 	Bodies = Matter.Bodies,
 	Body = Matter.Body,
+	Bounds = Matter.Bounds,
 	Events = Matter.Events,
 	Composite = Matter.Composite;
 
@@ -112,6 +113,16 @@ function getCircleColor(value) {
 	return colors[(value - 2) % colors.length];
 }
 
+function setBodyScale(circle) {
+	Bounds.update(circle.body.bounds, circle.body.vertices);
+
+	let scale =
+		(circle.radius * 2) /
+		(circle.body.bounds.max.x - circle.body.bounds.min.x);
+
+	Body.scale(circle.body, scale, scale);
+}
+
 function addCircle(value, x, y) {
 	if (circle_pool.length > 0) {
 		let recycled = circle_pool.pop();
@@ -122,15 +133,6 @@ function addCircle(value, x, y) {
 		recycled.color = getCircleColor(value);
 
 		recycled.boundaryTimer = 0;
-
-		let scale =
-			recycled.radius /
-			((recycled.body.bounds.max.x -
-				recycled.body.bounds.min.x +
-				(recycled.body.bounds.max.y - recycled.body.bounds.min.y)) *
-				0.25);
-
-		Body.scale(recycled.body, scale, scale);
 
 		Body.setPosition(recycled.body, {
 			x: x,
@@ -153,15 +155,11 @@ function addCircle(value, x, y) {
 			boundaryTimer: 0,
 		});
 
-		Body.scale(
-			circles[circles.length - 1].body,
-			getCircleRadius(value) / 100,
-			getCircleRadius(value) / 100
-		);
-
 		circles[circles.length - 1].body.__circle =
 			circles[circles.length - 1];
 	}
+
+	setBodyScale(circles[circles.length - 1]);
 
 	Composite.add(engine.world, [circles[circles.length - 1].body]);
 }
