@@ -90,6 +90,8 @@ let t = 0;
 let d = 0;
 let ld = 0;
 
+let hasMerged = false;
+
 let needsResize = false;
 
 function getCircleRadius(value) {
@@ -199,6 +201,8 @@ function render() {
 	}
 
 	requestAnimationFrame(render);
+
+	hasMerged = false;
 
 	Engine.update(engine, d, d / ld);
 
@@ -336,16 +340,23 @@ Composite.add(engine.world, [ground, wall_left, wall_right]);
 
 //Listen to events...
 function onCollide(event) {
+	if (hasMerged) return;
 	for (let i = 0; i < event.pairs.length; i++) {
+		if (hasMerged) return;
+
 		if (event.pairs[i].bodyA.__circle && event.pairs[i].bodyB.__circle) {
 			if (
 				event.pairs[i].bodyA.__circle.value ===
 				event.pairs[i].bodyB.__circle.value
 			) {
+				hasMerged = true;
+
 				merge(
 					event.pairs[i].bodyA.__circle,
 					event.pairs[i].bodyB.__circle
 				);
+
+				break;
 			}
 		}
 	}
