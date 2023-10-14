@@ -134,9 +134,16 @@ function addCircle(value, x, y) {
 
 		recycled.boundaryTimer = 0;
 
-		Body.setPosition(recycled.body, {
-			x: x,
-			y: y,
+		Body.set(recycled.body, {
+			position: {
+				x: x,
+				y: y,
+			},
+
+			angle: 0,
+			angularVelocity: 0,
+			speed: 0,
+			velocity: { x: 0, y: 0 },
 		});
 
 		circles.push(recycled);
@@ -166,10 +173,6 @@ function addCircle(value, x, y) {
 
 function remove(circle) {
 	Composite.remove(engine.world, circle.body);
-
-	Body.setAngle(circle.body, 0);
-	Body.setAngularVelocity(circle.body, 0);
-	Body.setSpeed(circle.body, 0);
 
 	circle_pool.push(circle);
 
