@@ -103,7 +103,7 @@ let hasMerged = false;
 let needsResize = false;
 
 function getCircleRadius(value) {
-	return Math.min(10 + value * 7.5 + value ** 2 * 0.2, width * 0.5 - 10);
+	return Math.min(Math.sqrt(2 ** value / pi), width * 0.5 - 10);
 }
 function getCircleColor(value) {
 	if (value <= 1) {
@@ -203,6 +203,8 @@ function render() {
 	d = Date.now() - at;
 	t += d;
 	at += d;
+
+	d = Math.min(33, d);
 
 	if (needsResize) {
 		resize();
