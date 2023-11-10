@@ -199,6 +199,10 @@ function merge(circleA, circleB) {
 	remove(circleB);
 }
 
+function updateScore() {
+	emit("score", { score: getScore(), count: circles.length });
+}
+
 function render() {
 	d = Date.now() - at;
 	t += d;
@@ -219,7 +223,7 @@ function render() {
 	}
 
 	if (hasMerged) {
-		emit("score", { score: getScore(), count: circles.length });
+		updateScore();
 	}
 
 	ctx.clearRect(
@@ -386,6 +390,8 @@ function onPointerClick() {
 	addCircle(preview.value, preview.x, 0);
 
 	updatePreview();
+
+	updateScore();
 }
 
 function updatePreview() {
@@ -472,6 +478,8 @@ function restart() {
 	}
 
 	paused = false;
+
+	updateScore();
 }
 
 const listeners = {};
