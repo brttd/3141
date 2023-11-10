@@ -42,6 +42,15 @@ html, body {
   padding-top: 0;
 }
 
+#controls.below button, #controls.below #score, #controls.below #high-score {
+  display: inline-block;
+
+  margin: 0;
+  margin-right: 0.5rem;
+
+  vertical-align: middle;
+}
+
 #controls.floating {
   margin: 0;
 

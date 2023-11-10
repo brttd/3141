@@ -218,6 +218,10 @@ function render() {
 		Engine.update(engine, d, d / ld);
 	}
 
+	if (hasMerged) {
+		emit("score", { score: getScore(), count: circles.length });
+	}
+
 	ctx.clearRect(
 		0,
 		0,
@@ -343,17 +347,21 @@ function render() {
 	ld = d;
 }
 
-function gameOver() {
-	paused = true;
-
+function getScore() {
 	let score = 0;
 
 	for (let i = 0; i < circles.length; i++) {
 		score += 2 ** circles[i].value;
 	}
 
+	return score;
+}
+
+function gameOver() {
+	paused = true;
+
 	emit("gameOver", {
-		score: score,
+		score: getScore(),
 		circles: circles.length,
 	});
 }
@@ -433,7 +441,8 @@ canvas.addEventListener("pointerup", function (e) {
 });
 
 //START...
-
+canvas.width = 1;
+canvas.height = 1;
 resize();
 updatePreview();
 

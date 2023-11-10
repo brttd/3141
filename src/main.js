@@ -5,6 +5,9 @@ const elem_game = document.getElementById("game");
 const elem_controls = document.getElementById("controls");
 
 const elem_score = document.getElementById("score");
+const elem_high_score = document.getElementById("high-score");
+
+let high_score = 0;
 
 const elem_game_over = document.getElementById("game-over-screen");
 const elem_game_over_score = document.getElementById("go-score");
@@ -19,8 +22,32 @@ function restart() {
 	game.restart();
 }
 
+if (window.localStorage) {
+	let saved = parseInt(window.localStorage.getItem("high-score"));
+
+	if (saved && saved > 0 && isFinite(saved)) {
+		high_score = saved;
+
+		elem_high_score.textContent = "High Score: " + high_score;
+	}
+}
+
 //Events
 document.getElementById("btn-restart").addEventListener("click", restart);
+
+game.on("score", function (event) {
+	elem_score.textContent = "Score: " + event.score;
+
+	if (event.score > high_score) {
+		high_score = event.score;
+
+		elem_high_score.textContent = "High Score: " + high_score;
+
+		if (window.localStorage) {
+			window.localStorage.setItem("high-score", high_score);
+		}
+	}
+});
 
 game.on("gameOver", function (event) {
 	elem_game_over.style.display = "block";
