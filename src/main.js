@@ -67,6 +67,7 @@ function resize() {
 	awaitingResize = false;
 
 	let width = Math.min(
+		document.body.offsetWidth - 20,
 		window.innerWidth - 20,
 		(window.innerHeight - 20) * ratio,
 		500
